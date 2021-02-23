@@ -1,0 +1,45 @@
+#+TITLE: Playing with e-paper and Micropython
+
+I wanted to do some proof of concept using a Pycom LoPy4 and a e-paper display (epd2in13_V2).
+
+* Hardware
+
+- [[https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT][Waveshare e-Paper V2]] (V2 is important here)
+- [[https://pycom.io/product/lopy4/][Pycom LoPy4]] (running stock micropython from pycom)
+
+* Software
+
+-  [[https://github.com/waveshare/e-Paper/][Waveshare Python driver]] with my [[https://github.com/waveshare/e-Paper/pull/139][pull request]] for the MicroPython driver
+
+* Testing
+
+The MicroPython provided by pycom does not have the PIL (or Pillow) package.
+So to run my test I crafted the "image" to display outside the controller (on my computer)
+and just imported the generated python code.
+
+** Get and upload the image.py
+
+- Run /gen_image.py/ with the /2in13-v2.bmp/ test file from the Waveshare repository.
+- Upload /image.py/ in /flash/
+
+** Upload the driver from Waveshare (with my PR to get MicroPython implementation)
+
+Following files goest to /flash/lib/waveshare_epd/ (to be created before)
+
+- waveshare_epd/epd2in13_V2.py
+- waveshare_epd/epd2in13_V2.py
+- waveshare_epd/__init__.py
+
+** Upload the main.py
+
+In /flash/main.py
+
+#+begin_example python
+from waveshare_epd import epd2in13_V2
+from image import image
+
+epd = epd2in13_V2.EPD()
+epd.init(epd.FULL_UPDATE)
+epd.Clear(0xFF)
+epd.display(image)
+#+end_example
